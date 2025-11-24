@@ -1,78 +1,138 @@
-/**
- * Utilities for encoding URLs into short codes
- */
-
 import { SHORTCODE } from '$lib/constants';
+import { parse, getDomain } from 'tldts';
 
-/**
- * characters used for encoding (0-9, a-z, A-Z)
- */
 const BASE_CHARS = SHORTCODE.CHARS;
 const BASE = BASE_CHARS.length;
 
-/**
- * Generates a simple hash from a string
- * @param text - Input string to hash
- * @returns Numeric hash value
- */
-function hashString(text: string): number {
-	let hash = 0;
-	for (let i = 0; i < text.length; i++) {
-		const char = text.charCodeAt(i);
-		hash = (hash << 5) - hash + char;
-		hash = hash & hash; // Convert to 32-bit integer
-	}
-	return Math.abs(hash);
+function hashString(text: string): bigint {
+    let hash = 1469598103934665603n;
+    for (let i = 0; i < text.length; i++) {
+        const char = BigInt(text.charCodeAt(i));
+        hash = (hash ^ char) * 1099511628211n;
+    }
+    return hash < 0n ? -hash : hash;
 }
 
-/**
- * Encodes a number to base string
- * @param num - Number to encode
- * @param length - Target length of the encoded string
- * @returns encoded string
- */
-function toBase(num: number, length: number): string {
-	let encoded = '';
-	for (let i = 0; i < length; i++) {
-		encoded = BASE_CHARS[num % BASE] + encoded;
-		num = Math.floor(num / BASE);
-	}
-	return encoded;
+function toBase(num: bigint, length: number, seed = ''): string {
+    let encoded = '';
+    let n = num;
+    for (let i = 0; i < length; i++) {
+        let rem: bigint;
+        if (n > 0n) {
+            rem = n % BigInt(BASE);
+            n = n / BigInt(BASE);
+        } else {
+            const fallback = hashString(num.toString() + '::' + seed + '::' + i.toString());
+            rem = fallback % BigInt(BASE);
+        }
+        encoded = BASE_CHARS[Number(rem)] + encoded;
+    }
+    return encoded;
 }
 
-/**
- * Encodes a URL to a short string
- * Uses a deterministic hash encoding
- *
- * @param url - URL to encode
- * @param length - Target length of the shortcode (default: 6)
- * @returns Short encoded string
- *
- * @example
- * encodeUrl('https://github.com/user') // Returns something like 'a3k9zx'
- */
+function normaliseUrl(url: string): string {
+    try {
+        const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+        parsed.hash = '';
+
+        const sortedParams = [...parsed.searchParams.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+        parsed.search = '';
+        for (const [key, value] of sortedParams) parsed.searchParams.append(key, value);
+
+        parsed.hostname = parsed.hostname.toLowerCase();
+        parsed.protocol = 'https:';
+        return parsed.toString();
+    } catch (e) {
+        return url.trim();
+    }
+}
+
+function getBaseDomain(url: string): string {
+    try {
+        const domain = getDomain(url, { allowPrivateDomains: false });
+        if (domain) return domain.toLowerCase();
+
+        const parsed = parse(url, { extractHostname: true });
+        return (parsed.hostname ?? '').toLowerCase();
+    } catch (e) {
+        return '';
+    }
+}
+
 export function encodeUrl(url: string, length: number = SHORTCODE.DEFAULT_LENGTH): string {
-	const hash = hashString(url);
-	return toBase(hash, length);
+    if (!Number.isInteger(length) || length < 3) length = SHORTCODE.DEFAULT_LENGTH;
+
+    const DOMAIN_PREFIX_LENGTH = 2;
+
+    const normalised = normaliseUrl(url);
+    const apex = getBaseDomain(normalised) || '';
+
+    const domainHash = hashString(apex || normalised);
+    const domainPrefix = toBase(domainHash, DOMAIN_PREFIX_LENGTH, 'domain');
+
+    const remaining = Math.max(1, length - DOMAIN_PREFIX_LENGTH);
+
+    let hostname = '';
+    try {
+        hostname = new URL(normalised).hostname.toLowerCase();
+    } catch (e) {
+        try { hostname = new URL(url.startsWith('http') ? url : `https://${url}`).hostname.toLowerCase(); } catch { hostname = ''; }
+    }
+
+    let subLevels: string[] = [];
+    if (apex && hostname && hostname !== apex) {
+        const sub = hostname.replace(new RegExp(`\.${apex}$`), '');
+        subLevels = sub.split('.');
+    }
+
+    const MIN_URL_CORE = 1;
+    const MIN_TAIL = 1;
+    const tailLength = remaining;
+
+    const urlHash = hashString(normalised + '::url');
+    const urlCoreLength = remaining - subLevels.length;
+    const urlCore = toBase(urlHash, Math.max(MIN_URL_CORE, urlCoreLength), 'url');
+
+    const subTail: string[] = [];
+    const reversedSubLevels = subLevels.slice().reverse();
+    for (let i = 0; i < reversedSubLevels.length; i++) {
+        const h = hashString(reversedSubLevels[i] + '::sub');
+        subTail.push(toBase(h, 1, 'sub' + i));
+    }
+
+    let tail = subTail.join('');
+    if (!tail) {
+        const fallbackHash = hashString(normalised + '::fallback');
+        tail = toBase(fallbackHash, tailLength, 'sub');
+    }
+
+    let out = domainPrefix + urlCore + tail;
+    if (out.length > length) out = out.slice(0, length);
+    if (out.length < length) {
+        let pad = '';
+        let i = 0;
+        while (out.length + pad.length < length) {
+            const h = hashString(normalised + '::pad2::' + i);
+            pad += toBase(h, Math.min(4, length - out.length - pad.length), 'pad2' + i);
+            i++;
+        }
+        out += pad.slice(0, length - out.length);
+    }
+
+    // --- LOGGING MAX COMBINATIONS ---
+    const maxCombinations = BigInt(BASE) ** BigInt(length);
+    console.log(`[Shortcode Info] URL: ${url}`);
+    console.log(`[Shortcode Info] Length: ${length}, Charset: ${BASE} chars`);
+    console.log(`[Shortcode Info] Max possible combinations: ${maxCombinations.toString()}`);
+    console.log(`[Shortcode Info] Domain prefix: ${domainPrefix}, URL core: ${urlCore}, Subdomain tail: ${tail}`);
+
+    return out;
 }
 
-/**
- * Validates if a string is a valid shortcode
- * @param code - String to validate
- * @returns True if the code contains only valid characters
- */
 export function isValidShortcode(code: string): boolean {
-	return /^[0-9a-zA-Z]+$/.test(code);
+    return /^[0-9a-zA-Z]+$/.test(code);
 }
 
-/**
- * Calculates the maximum number of possible shortcodes for a given length
- * @param length - Length of the shortcode
- * @returns Number of possible combinations
- *
- * @example
- * getMaxCombinations(6)
- */
 export function getMaxCombinations(length: number): number {
-	return Math.pow(BASE, length);
+    return Math.pow(BASE, length);
 }
