@@ -88,9 +88,18 @@
 
 	<footer>
 		<p>
-			Powered by <a href="https://linkat.blue" target="_blank">Linkat</a>,
-			<a href="https://atproto.com" target="_blank">AT Protocol</a>, and
-			<a href="https://slingshot.microcosm.blue" target="_blank">Slingshot</a>
+			Powered by <a href="https://linkat.blue" target="_blank" rel="noopener noreferrer">Linkat</a>,
+			<a href="https://atproto.com" target="_blank" rel="noopener noreferrer">AT Protocol</a>, and
+			<a href="https://slingshot.microcosm.blue" target="_blank" rel="noopener noreferrer"
+				>Slingshot</a
+			>
+		</p>
+		<p>
+			<a
+				href="https://github.com/ewanc26/atproto-shortlink"
+				target="_blank"
+				rel="noopener noreferrer">Source Code on GitHub</a
+			>
 		</p>
 	</footer>
 </main>
