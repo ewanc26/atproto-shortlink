@@ -18,13 +18,13 @@ export const CACHE = {
  */
 export const SHORTCODE = {
 	/** Default length for generated shortcodes */
-	DEFAULT_LENGTH: 6,
+	DEFAULT_LENGTH: 10,
 
 	/** Maximum collision resolution attempts */
 	MAX_COLLISION_ATTEMPTS: 20,
 
 	/** character set */
-	CHARS: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	CHARS: 'abcABCdefDEFghiHIJjklLMNmnOPQopqRSTrstUVWuvwXYZxyz0123456789'
 } as const;
 
 /**
