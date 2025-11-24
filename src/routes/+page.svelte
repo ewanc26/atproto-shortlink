@@ -47,12 +47,6 @@
 	<section>
 		<h2>Available Short Links</h2>
 		{#if data.links && data.links.length > 0}
-			<div class="info-box">
-				<p>
-					<strong>Shortcodes:</strong> Each link has a unique 6-character code generated from its
-					URL using base62 encoding (0-9, a-z, A-Z).
-				</p>
-			</div>
 			<ul class="links">
 				{#each data.links as link}
 					<li>
@@ -128,8 +122,7 @@
 	}
 
 	.info,
-	.error,
-	.info-box {
+	.error {
 		padding: 1rem;
 		border-radius: 0.5rem;
 		margin-bottom: 1rem;
@@ -143,12 +136,6 @@
 	.error {
 		background: #ffebee;
 		border: 1px solid #f44336;
-	}
-
-	.info-box {
-		background: #e3f2fd;
-		border: 1px solid #2196f3;
-		color: #0d47a1;
 	}
 
 	.help {
