@@ -50,7 +50,7 @@ If you don't have a Linkat board yet:
 2. Create a board with your links
 3. Add your links with titles and emojis
 
-The shortener will automatically generate unique 6-character codes for each URL!
+The shortener will automatically generate unique codes for each URL!
 
 ### 4. Test Your Configuration (Optional)
 
