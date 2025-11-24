@@ -10,6 +10,7 @@ A **server-side** link shortening service powered by your [Linkat](https://linka
 - 🎯 **Smart Redirects**: Instant HTTP 301 redirects to your target URLs
 - 🔍 **Automatic PDS Discovery**: Resolves your PDS endpoint via Slingshot
 - ⚡ **Built-in Cache**: 5-minute cache for optimal performance
+- 🎨 **Tailwind CSS 4**: Modern styling with the latest Tailwind version
 
 ## 🚀 Quick Start
 
@@ -206,9 +207,26 @@ npm run format
 npm run lint
 ```
 
+## 🎨 Styling with Tailwind CSS 4
+
+This project uses **Tailwind CSS 4** with the new Vite plugin. See [TAILWIND.md](./TAILWIND.md) for detailed information about:
+
+- New Tailwind CSS 4 features
+- Configuration and customization
+- Dark mode support
+- Migration from v3
+
+Key features:
+
+- ✅ Native CSS imports with `@import 'tailwindcss'`
+- ✅ Faster builds with the Vite plugin
+- ✅ Automatic dark mode support
+- ✅ No config file needed for basic usage
+
 ## 📦 Tech Stack
 
 - **Framework**: [SvelteKit 2](https://kit.svelte.dev/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **Runtime**: Server-side only (no client JavaScript required)
 - **Data Source**: AT Protocol (`blue.linkat.board` collection)
 - **PDS Resolution**: [Slingshot](https://slingshot.microcosm.blue) by Microcosm
@@ -239,6 +257,7 @@ AGPLv3 Licence - See [LICENCE](./LICENCE) file for details
 - [Linkat](https://linkat.blue) - The link board service
 - [AT Protocol](https://atproto.com) - The underlying protocol
 - [SvelteKit](https://kit.svelte.dev) - The web framework
+- [Tailwind CSS](https://tailwindcss.com) - CSS framework
 - [PDSls](https://pdsls.dev/) - Find your DID
 - [Slingshot](https://slingshot.microcosm.blue) - Identity resolver
 
