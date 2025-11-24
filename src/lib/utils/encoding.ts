@@ -5,9 +5,9 @@
 import { SHORTCODE } from '$lib/constants';
 
 /**
- * Base70 characters used for encoding (0-9, a-z, A-Z, and special chars: +=_-?<>)
+ * characters used for encoding (0-9, a-z, A-Z)
  */
-const BASE_CHARS = SHORTCODE.BASE62_CHARS;
+const BASE_CHARS = SHORTCODE.CHARS;
 const BASE = BASE_CHARS.length;
 
 /**
@@ -29,7 +29,7 @@ function hashString(text: string): number {
  * Encodes a number to base string
  * @param num - Number to encode
  * @param length - Target length of the encoded string
- * @returns Base70 encoded string
+ * @returns encoded string
  */
 function toBase(num: number, length: number): string {
 	let encoded = '';
@@ -41,12 +41,12 @@ function toBase(num: number, length: number): string {
 }
 
 /**
- * Encodes a URL to a short base70 string
- * Uses a deterministic hash-to-base70 encoding
+ * Encodes a URL to a short string
+ * Uses a deterministic hash encoding
  *
  * @param url - URL to encode
  * @param length - Target length of the shortcode (default: 6)
- * @returns Short base70 encoded string
+ * @returns Short encoded string
  *
  * @example
  * encodeUrl('https://github.com/user') // Returns something like 'a3k9zx'
@@ -57,12 +57,12 @@ export function encodeUrl(url: string, length: number = SHORTCODE.DEFAULT_LENGTH
 }
 
 /**
- * Validates if a string is a valid base70 shortcode
+ * Validates if a string is a valid shortcode
  * @param code - String to validate
  * @returns True if the code contains only valid characters
  */
 export function isValidShortcode(code: string): boolean {
-	return /^[0-9a-zA-Z+=_\-?<>]+$/.test(code);
+	return /^[0-9a-zA-Z]+$/.test(code);
 }
 
 /**
@@ -71,7 +71,7 @@ export function isValidShortcode(code: string): boolean {
  * @returns Number of possible combinations
  *
  * @example
- * getMaxCombinations(6) // Returns 117649000000 (70^6)
+ * getMaxCombinations(6)
  */
 export function getMaxCombinations(length: number): number {
 	return Math.pow(BASE, length);
