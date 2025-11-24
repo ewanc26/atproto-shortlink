@@ -23,8 +23,8 @@ export const SHORTCODE = {
 	/** Maximum collision resolution attempts */
 	MAX_COLLISION_ATTEMPTS: 20,
 
-	/** Base70 character set (includes special characters) */
-	BASE62_CHARS: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+=_-?<>'
+	/** character set */
+	CHARS: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 } as const;
 
 /**
