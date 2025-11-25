@@ -209,12 +209,7 @@ npm run lint
 
 ## 🎨 Styling with Tailwind CSS 4
 
-This project uses **Tailwind CSS 4** with the new Vite plugin. See [TAILWIND.md](./TAILWIND.md) for detailed information about:
-
-- New Tailwind CSS 4 features
-- Configuration and customization
-- Dark mode support
-- Migration from v3
+This project uses **Tailwind CSS 4** with the new Vite plugin.
 
 Key features:
 
