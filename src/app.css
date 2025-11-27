@@ -72,10 +72,25 @@ html {
 	background-color: rgb(var(--color-background));
 	color: rgb(var(--color-text-primary));
 	min-height: 100vh;
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease;
 }
 
 body {
 	background-color: rgb(var(--color-background));
 	color: rgb(var(--color-text-primary));
 	min-height: 100vh;
+}
+
+/* Smooth transitions for color changes */
+* {
+	transition-property: background-color, border-color, color, fill, stroke;
+	transition-duration: 0.2s;
+	transition-timing-function: ease;
+}
+
+/* Preserve transform transitions */
+*:where([style*='transform']) {
+	transition-property: background-color, border-color, color, fill, stroke, transform;
 }
