@@ -28,7 +28,7 @@ function log(message, color = 'reset') {
 }
 
 function success(message) {
-	log(`✓ ${message}`, 'green');
+	log(`${message}`, 'green');
 }
 
 function error(message) {
