@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { X } from '@lucide/svelte';
-	import { onMount } from 'svelte';
 
 	interface Props {
 		url: string;
@@ -10,35 +9,49 @@
 
 	let { url, isOpen, onClose }: Props = $props();
 
-	let qrCodeContainer: HTMLDivElement;
+	let qrCodeContainer = $state<HTMLDivElement | undefined>();
+
+	// Handle keyboard events for accessibility
+	function handleBackdropKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') {
+			onClose();
+		}
+	}
 
 	$effect(() => {
 		if (isOpen && qrCodeContainer && typeof window !== 'undefined') {
 			import('qrcode').then(({ default: QRCode }) => {
+				if (!qrCodeContainer) return;
+				
 				qrCodeContainer.innerHTML = '';
-				QRCode.toCanvas(url, {
-					errorCorrectionLevel: 'H',
-					margin: 2,
-					width: 256,
-					color: {
-						dark: '#000000',
-						light: '#FFFFFF'
+				QRCode.toCanvas(
+					url,
+					{
+						errorCorrectionLevel: 'H',
+						margin: 2,
+						width: 256,
+						color: {
+							dark: '#000000',
+							light: '#FFFFFF'
+						}
+					},
+					(error: Error | null | undefined, canvas: HTMLCanvasElement) => {
+						if (error) {
+							console.error('QR Code generation error:', error);
+							return;
+						}
+						if (qrCodeContainer) {
+							qrCodeContainer.appendChild(canvas);
+						}
 					}
-				}, (error: Error | null | undefined, canvas: HTMLCanvasElement) => {
-					if (error) {
-						console.error('QR Code generation error:', error);
-						return;
-					}
-					if (qrCodeContainer) {
-						qrCodeContainer.appendChild(canvas);
-					}
-				});
+				);
 			});
 		}
 	});
 </script>
 
 {#if isOpen}
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		style="
 			position: fixed;
@@ -56,15 +69,18 @@
 			z-index: 9999;
 		"
 		onclick={onClose}
+		onkeydown={handleBackdropKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="qr-modal-title"
+		tabindex="-1"
 	>
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="relative w-full max-w-md rounded-lg p-8 shadow-2xl"
 			style="background-color: rgb(var(--color-surface)); color: rgb(var(--color-text-primary))"
 			onclick={(e) => e.stopPropagation()}
-			role="document"
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<button
 				onclick={onClose}
@@ -90,11 +106,8 @@
 			</h2>
 
 			<div class="flex flex-col items-center gap-4">
-				<div
-					bind:this={qrCodeContainer}
-					class="rounded-lg p-4"
-					style="background-color: white;"
-				></div>
+				<div bind:this={qrCodeContainer} class="rounded-lg p-4" style="background-color: white;">
+				</div>
 				<p
 					class="max-w-xs break-all text-center text-sm"
 					style="color: rgb(var(--color-text-secondary))"
