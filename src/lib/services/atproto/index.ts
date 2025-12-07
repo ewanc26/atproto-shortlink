@@ -6,7 +6,7 @@
  */
 
 export { createAgent } from './agent-factory';
-export { resolveIdentity, type ResolvedIdentity } from './identity-resolver';
+export { resolveIdentity, resolveHandle, type ResolvedIdentity } from './identity-resolver';
 export {
 	defaultAgent,
 	getPublicAgent,

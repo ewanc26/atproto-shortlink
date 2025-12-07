@@ -15,8 +15,10 @@
 	let isHovered = $state(false);
 	let showQRModal = $state(false);
 
-	// Get the full URL for copying
-	const fullUrl = typeof window !== 'undefined' ? `${window.location.origin}/${shortcode}` : '';
+	// Use $derived to make this reactive and avoid capturing initial value
+	const fullUrl = $derived(
+		typeof window !== 'undefined' ? `${window.location.origin}/${shortcode}` : ''
+	);
 </script>
 
 <li>

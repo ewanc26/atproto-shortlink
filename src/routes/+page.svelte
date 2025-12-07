@@ -61,8 +61,9 @@
 			<StatusCard type="success">
 				<div class="space-y-1" style="color: rgb(var(--color-text-primary))">
 					<p>Service is running</p>
-					<p class="flex items-center gap-2">
-						Configured DID: <CodeBlock>{data.did}</CodeBlock>
+					<p class="flex items-center gap-2 flex-wrap">
+						Configured {data.handle ? 'handle' : 'DID'}:
+						<CodeBlock>{data.handle || data.did}</CodeBlock>
 					</p>
 					<p>Active links: {data.linkCount}</p>
 				</div>

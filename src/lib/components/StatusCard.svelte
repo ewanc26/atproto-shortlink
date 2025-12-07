@@ -21,8 +21,9 @@
 		}
 	};
 
-	const config = styles[type];
-	const Icon = config.icon;
+	// Use $derived to make this reactive
+	const config = $derived(styles[type]);
+	const Icon = $derived(config.icon);
 </script>
 
 <div

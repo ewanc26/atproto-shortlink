@@ -6,6 +6,7 @@ import { ATPROTO } from '$lib/constants';
 export interface ResolvedIdentity {
 	did: string;
 	pds: string;
+	handle?: string;
 }
 
 /**
@@ -51,5 +52,54 @@ export async function resolveIdentity(
 		throw new Error('Invalid response from identity resolver');
 	}
 
-	return data;
+	return {
+		did: data.did,
+		pds: data.pds,
+		handle: data.handle
+	};
+}
+
+/**
+ * Resolves a DID to get the user's handle
+ *
+ * @param did - The DID to resolve
+ * @param fetchFn - Optional custom fetch function
+ * @returns The user's handle
+ * @throws Error if resolution fails
+ */
+export async function resolveHandle(
+	did: string,
+	fetchFn?: typeof fetch
+): Promise<string> {
+	console.info(`[Identity] Resolving handle for DID: ${did}`);
+
+	const identity = await resolveIdentity(did, fetchFn);
+
+	if (identity.handle) {
+		console.info(`[Identity] Found handle from Slingshot: ${identity.handle}`);
+		return identity.handle;
+	}
+
+	// Fallback: fetch profile from public API if handle not in identity response
+	console.info('[Identity] Handle not in Slingshot response, fetching from public API');
+	const _fetch = fetchFn ?? globalThis.fetch;
+	const response = await _fetch(
+		`https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(did)}`
+	);
+
+	if (!response.ok) {
+		console.error(`[Identity] Profile fetch failed: ${response.status} ${response.statusText}`);
+		throw new Error(
+			`Failed to fetch profile from Bluesky API: ${response.status} ${response.statusText}`
+		);
+	}
+
+	const profile = await response.json();
+
+	if (!profile.handle) {
+		throw new Error('No handle found in profile response');
+	}
+
+	console.info(`[Identity] Resolved handle from API: ${profile.handle}`);
+	return profile.handle;
 }
