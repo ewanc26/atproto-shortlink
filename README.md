@@ -258,4 +258,10 @@ AGPLv3 Licence - See [LICENCE](./LICENCE) file for details
 
 ---
 
+## ☕ Support
+
+If you found this useful, consider [buying me a ko-fi](https://ko-fi.com/ewancroft)!
+
+---
+
 Made with ❤️ using AT Protocol and Linkat
