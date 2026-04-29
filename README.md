@@ -2,6 +2,8 @@
 
 A **server-side** link shortening service powered by your [Linkat](https://linkat.blue) board. No database required - all links are fetched directly from AT Protocol!
 
+> 🧶 Also available on [Tangled](https://tangled.org/ewancroft.uk/atproto-shortlink)
+
 ## ✨ Features
 
 - **Zero Configuration Database**: Uses your existing Linkat board as the data source
