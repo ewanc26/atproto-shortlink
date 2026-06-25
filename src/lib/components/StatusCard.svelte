@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Contextual status banner for success and error states.
+	 * Derives icon and colour scheme from a `type` prop — keeps template
+	 * logic minimal and the variant mapping centralised.
+	 */
 	import { CheckCircle2, AlertCircle } from '@lucide/svelte';
 
 	interface Props {

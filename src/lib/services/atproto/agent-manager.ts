@@ -1,3 +1,11 @@
+/**
+ * Agent lifecycle management: caching, PDS resolution, and fallback orchestration.
+ *
+ * Agents are cached after first resolution so subsequent calls skip the
+ * Slingshot identity lookup. If PDS resolution fails, we fall back to the
+ * public Bluesky API endpoint so the app stays functional during outages.
+ */
+
 import { ATPROTO } from '$lib/constants';
 import type { AtpAgent } from '@atproto/api';
 import { createAgent } from './agent-factory';

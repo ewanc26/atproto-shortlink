@@ -1,3 +1,8 @@
+/**
+ * Public API endpoint — returns all short links as JSON.
+ * Used by the homepage and available for external clients.
+ */
+
 import type { RequestHandler } from './$types';
 import { getShortLinks } from '$lib/services/linkat';
 import { json } from '@sveltejs/kit';

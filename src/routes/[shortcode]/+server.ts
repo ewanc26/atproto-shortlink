@@ -1,3 +1,12 @@
+/**
+ * Shortcode redirect handler.
+ *
+ * Looks up a shortcode against the Linkat board and issues a 301 permanent
+ * redirect to the target URL. Returns a styled 404 page if the shortcode
+ * is unknown — including inline critical CSS so it renders correctly
+ * without loading the full app stylesheet.
+ */
+
 import type { RequestHandler } from './$types';
 import { findShortLink } from '$lib/services/linkat';
 import { HTTP } from '$lib/constants';
@@ -28,7 +37,7 @@ export const GET: RequestHandler = async ({ params }) => {
 			--color-surface: 248 250 252;
 			--color-primary: 59 130 246;
 		}
-		
+
 		@media (prefers-color-scheme: dark) {
 			:root {
 				--color-bg: 15 23 42;
@@ -38,7 +47,7 @@ export const GET: RequestHandler = async ({ params }) => {
 				--color-primary: 96 165 250;
 			}
 		}
-		
+
 		body {
 			margin: 0;
 			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -49,30 +58,30 @@ export const GET: RequestHandler = async ({ params }) => {
 			justify-content: center;
 			min-height: 100vh;
 		}
-		
+
 		.container {
 			max-width: 600px;
 			padding: 2rem;
 			text-align: center;
 		}
-		
+
 		h1 {
 			font-size: 3rem;
 			margin-bottom: 1rem;
 		}
-		
+
 		h2 {
 			font-size: 1.5rem;
 			font-weight: 600;
 			margin-bottom: 1rem;
 		}
-		
+
 		p {
 			color: rgb(var(--color-text-secondary));
 			line-height: 1.6;
 			margin-bottom: 1rem;
 		}
-		
+
 		code {
 			background: rgb(var(--color-surface));
 			padding: 0.2rem 0.5rem;
@@ -80,12 +89,12 @@ export const GET: RequestHandler = async ({ params }) => {
 			font-family: 'Courier New', monospace;
 			font-size: 0.875rem;
 		}
-		
+
 		a {
 			color: rgb(var(--color-primary));
 			text-decoration: none;
 		}
-		
+
 		a:hover {
 			text-decoration: underline;
 		}
@@ -115,6 +124,6 @@ export const GET: RequestHandler = async ({ params }) => {
 
 	console.log(`[Redirect] Redirecting to: ${link.url}`);
 
-	// Permanent redirect
+	// Permanent redirect (301) — browsers and search engines will cache this
 	throw redirect(HTTP.REDIRECT_PERMANENT, link.url);
 };

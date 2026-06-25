@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * Clipboard copy button with a 2-second checkmark confirmation.
+	 * Cleans up its timeout on each click to avoid stale resets.
+	 */
 	import { Copy, Check } from '@lucide/svelte';
 
 	interface Props {

@@ -1,3 +1,6 @@
+# atproto-shortlink — Nix flake for a reproducible dev environment.
+# Provides Node.js 22 and pnpm. Formatting via nixfmt-rfc-style.
+
 {
   description = "atproto-shortlink — AT Protocol short link tool";
 

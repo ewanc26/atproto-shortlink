@@ -2,9 +2,8 @@
  * Application-wide constants and configuration
  */
 
-/**
- * Cache configuration
- */
+// ── Cache Configuration ───────────────────────────────────
+
 export const CACHE = {
 	/** Default TTL for cached data (5 minutes) */
 	DEFAULT_TTL: 300000,
@@ -13,9 +12,8 @@ export const CACHE = {
 	LINKAT_PREFIX: 'linkat:'
 } as const;
 
-/**
- * Shortcode configuration
- */
+// ── Shortcode Configuration ───────────────────────────────
+
 export const SHORTCODE = {
 	/** Default length for generated shortcodes */
 	DEFAULT_LENGTH: 10,
@@ -27,9 +25,8 @@ export const SHORTCODE = {
 	CHARS: 'abcABCdefDEFghiHIJjklLMNmnOPQopqRSTrstUVWuvwXYZxyz0123456789'
 } as const;
 
-/**
- * AT Protocol configuration
- */
+// ── AT Protocol Configuration ─────────────────────────────
+
 export const ATPROTO = {
 	/** Slingshot identity resolver endpoint */
 	SLINGSHOT_ENDPOINT: 'https://slingshot.microcosm.blue',
@@ -44,9 +41,8 @@ export const ATPROTO = {
 	LINKAT_RKEY: 'self'
 } as const;
 
-/**
- * HTTP configuration
- */
+// ── HTTP Status Configuration ─────────────────────────────
+
 export const HTTP = {
 	/** Status code for permanent redirect */
 	REDIRECT_PERMANENT: 301,

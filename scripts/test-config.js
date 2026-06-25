@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * Test script to verify AT Protocol Link Shortener configuration
- * Run with: node scripts/test-config.js
+ * Configuration test script.
+ *
+ * Validates the .env file, resolves the PDS endpoint, tests connectivity,
+ * and checks for a Linkat board. Useful for diagnosing setup issues before
+ * starting the dev server.
+ *
+ * Usage: node scripts/test-config.js
  */
 
 import { AtpAgent } from '@atproto/api';

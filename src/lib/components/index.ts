@@ -1,3 +1,7 @@
+/**
+ * Component barrel — re-exports all UI components for clean imports.
+ */
+
 export { default as StatusCard } from './StatusCard.svelte';
 export { default as CodeBlock } from './CodeBlock.svelte';
 export { default as Link } from './Link.svelte';

@@ -1,146 +1,136 @@
-import { SHORTCODE } from '$lib/constants'; // Import constants for shortcode configuration
-import { parse, getDomain } from 'tldts'; // Import utility functions for domain parsing
+/**
+ * URL-to-shortcode encoding using FNV-1a hashing and base-N encoding.
+ *
+ * Shortcodes are structured as a 2-char domain prefix + URL content hash +
+ * subdomain tail, producing collision-resistant identifiers without
+ * requiring a database to track the next available slot.
+ */
 
-// Constants related to the character set for encoding
-const BASE_CHARS = SHORTCODE.CHARS; // Charset for the shortcode encoding
-const BASE = BASE_CHARS.length; // Base (the number of unique characters in the charset)
+import { SHORTCODE } from '$lib/constants';
+import { parse, getDomain } from 'tldts';
 
-// Hashes a given string into a bigint value
+const BASE_CHARS = SHORTCODE.CHARS;
+const BASE = BASE_CHARS.length;
+
+// ── FNV-1a Hashing ───────────────────────────────────────
+
 function hashString(text: string): bigint {
-	let hash = 1469598103934665603n; // FNV-1a hash initialisation value
+	let hash = 1469598103934665603n;
 	for (let i = 0; i < text.length; i++) {
-		const char = BigInt(text.charCodeAt(i)); // Convert each character to a bigint
-		hash = (hash ^ char) * 1099511628211n; // FNV-1a hashing algorithm
+		hash = (hash ^ BigInt(text.charCodeAt(i))) * 1099511628211n;
 	}
-	return hash < 0n ? -hash : hash; // Ensure the hash is positive
+	return hash < 0n ? -hash : hash;
 }
 
-// Converts a number (bigint) into a base encoded string with a given length
+// ── Base-N Encoding ───────────────────────────────────────
+
 function toBase(num: bigint, length: number, seed = ''): string {
-	let encoded = ''; // The resulting encoded string
+	let encoded = '';
 	let n = num;
 	for (let i = 0; i < length; i++) {
 		let rem: bigint;
-		// Calculate remainder and divide to get the next digit
 		if (n > 0n) {
 			rem = n % BigInt(BASE);
 			n = n / BigInt(BASE);
 		} else {
-			// Fallback if number is 0, use a hash for deterministic behaviour
+			// Fallback for zero — hash the position to stay deterministic
 			const fallback = hashString(num.toString() + '::' + seed + '::' + i.toString());
 			rem = fallback % BigInt(BASE);
 		}
-		encoded = BASE_CHARS[Number(rem)] + encoded; // Prepend the character for this base value
+		encoded = BASE_CHARS[Number(rem)] + encoded;
 	}
 	return encoded;
 }
 
-// Normalises a URL by ensuring it's well-formed and canonical
+// ── URL Normalisation ─────────────────────────────────────
+
 function normaliseUrl(url: string): string {
 	try {
-		// Ensure the URL starts with 'https://' and parse it
 		const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
-		parsed.hash = ''; // Remove hash fragment
-
-		// Sort URL query parameters alphabetically
+		parsed.hash = '';
+		// Sort query params for deterministic ordering
 		const sortedParams = [...parsed.searchParams.entries()].sort((a, b) =>
 			a[0].localeCompare(b[0])
 		);
-		parsed.search = ''; // Clear existing search parameters
-		for (const [key, value] of sortedParams) parsed.searchParams.append(key, value); // Rebuild query string
-
-		parsed.hostname = parsed.hostname.toLowerCase(); // Convert hostname to lowercase
-		parsed.protocol = 'https:'; // Ensure HTTPS protocol is used
-		return parsed.toString(); // Return the normalised URL as a string
+		parsed.search = '';
+		for (const [key, value] of sortedParams) parsed.searchParams.append(key, value);
+		parsed.hostname = parsed.hostname.toLowerCase();
+		parsed.protocol = 'https:';
+		return parsed.toString();
 	} catch (e) {
-		// If URL parsing fails, return the original URL (trimmed)
 		return url.trim();
 	}
 }
 
-// Extracts the base domain from a URL
 function getBaseDomain(url: string): string {
 	try {
-		// Use tldts library to get the domain from the URL
 		const domain = getDomain(url, { allowPrivateDomains: false });
 		if (domain) return domain.toLowerCase();
-
-		// Fallback to manual parsing if tldts fails
 		const parsed = parse(url, { extractHostname: true });
 		return (parsed.hostname ?? '').toLowerCase();
 	} catch (e) {
-		// Return an empty string if domain extraction fails
 		return '';
 	}
 }
 
-// Main function to encode a URL into a shortcode of specified length
+// ── URL Encoding ──────────────────────────────────────────
+
 export function encodeUrl(url: string, length: number = SHORTCODE.DEFAULT_LENGTH): string {
-	// Validate and adjust the length of the shortcode
 	if (!Number.isInteger(length) || length < 3) length = SHORTCODE.DEFAULT_LENGTH;
 
-	const DOMAIN_PREFIX_LENGTH = 2; // Number of characters used for the domain prefix
+	const DOMAIN_PREFIX_LENGTH = 2;
 
-	// Normalise the URL and extract the base domain
 	const normalised = normaliseUrl(url);
 	const apex = getBaseDomain(normalised) || '';
 
-	// Hash the domain to generate a prefix
+	// Domain prefix — visual hint of the destination domain
 	const domainHash = hashString(apex || normalised);
 	const domainPrefix = toBase(domainHash, DOMAIN_PREFIX_LENGTH, 'domain');
 
-	// Calculate the remaining length for the URL core and tail
 	const remaining = Math.max(1, length - DOMAIN_PREFIX_LENGTH);
 
-	let hostname = ''; // The hostname portion of the URL
+	let hostname = '';
 	try {
-		hostname = new URL(normalised).hostname.toLowerCase(); // Try to extract hostname from normalised URL
+		hostname = new URL(normalised).hostname.toLowerCase();
 	} catch (e) {
-		// Fallback if URL parsing fails
 		try {
 			hostname = new URL(url.startsWith('http') ? url : `https://${url}`).hostname.toLowerCase();
 		} catch {
-			hostname = ''; // If both parsing attempts fail, leave hostname empty
+			hostname = '';
 		}
 	}
 
 	let subLevels: string[] = [];
-	// If there is a subdomain, split it into separate levels
 	if (apex && hostname && hostname !== apex) {
-		const sub = hostname.replace(new RegExp(`\.${apex}$`), ''); // Remove the apex domain
-		subLevels = sub.split('.'); // Split subdomains by '.'
+		const sub = hostname.replace(new RegExp(`\.${apex}$`), '');
+		subLevels = sub.split('.');
 	}
 
-	// URL core length is determined based on the remaining space after the domain prefix
 	const MIN_URL_CORE = 1;
 	const MIN_TAIL = 1;
-	const tailLength = remaining; // Length allocated to the tail portion of the shortcode
+	const tailLength = remaining;
 
-	// Hash the normalised URL for the URL core portion of the shortcode
 	const urlHash = hashString(normalised + '::url');
-	const urlCoreLength = remaining - subLevels.length; // Account for subdomain levels
+	const urlCoreLength = remaining - subLevels.length;
 	const urlCore = toBase(urlHash, Math.max(MIN_URL_CORE, urlCoreLength), 'url');
 
-	// Generate subdomain-based tail (if applicable)
+	// Subdomain tail — one character per subdomain level
 	const subTail: string[] = [];
-	const reversedSubLevels = subLevels.slice().reverse(); // Reverse the subdomain levels for encoding
+	const reversedSubLevels = subLevels.slice().reverse();
 	for (let i = 0; i < reversedSubLevels.length; i++) {
-		const h = hashString(reversedSubLevels[i] + '::sub'); // Hash the subdomain level
-		subTail.push(toBase(h, 1, 'sub' + i)); // Add to subTail
+		const h = hashString(reversedSubLevels[i] + '::sub');
+		subTail.push(toBase(h, 1, 'sub' + i));
 	}
 
-	// If no subdomain tail is generated, use a fallback hash for the tail
 	let tail = subTail.join('');
 	if (!tail) {
 		const fallbackHash = hashString(normalised + '::fallback');
 		tail = toBase(fallbackHash, tailLength, 'sub');
 	}
 
-	// Combine domain prefix, URL core, and tail to form the final shortcode
 	let out = domainPrefix + urlCore + tail;
-	if (out.length > length) out = out.slice(0, length); // Trim to the desired length
+	if (out.length > length) out = out.slice(0, length);
 	if (out.length < length) {
-		// Pad the shortcode if it is too short
 		let pad = '';
 		let i = 0;
 		while (out.length + pad.length < length) {
@@ -148,11 +138,11 @@ export function encodeUrl(url: string, length: number = SHORTCODE.DEFAULT_LENGTH
 			pad += toBase(h, Math.min(4, length - out.length - pad.length), 'pad2' + i);
 			i++;
 		}
-		out += pad.slice(0, length - out.length); // Append padding to reach the correct length
+		out += pad.slice(0, length - out.length);
 	}
 
-	// --- LOGGING MAX COMBINATIONS --- (for debugging purposes)
-	const maxCombinations = BigInt(BASE) ** BigInt(length); // Calculate the max possible combinations for the shortcode
+	// Log collision space for debugging
+	const maxCombinations = BigInt(BASE) ** BigInt(length);
 	console.log(`[Shortcode Info] URL: ${url}`);
 	console.log(`[Shortcode Info] Length: ${length}, Charset: ${BASE} chars`);
 	console.log(`[Shortcode Info] Max possible combinations: ${maxCombinations.toString()}`);
@@ -160,15 +150,15 @@ export function encodeUrl(url: string, length: number = SHORTCODE.DEFAULT_LENGTH
 		`[Shortcode Info] Domain prefix: ${domainPrefix}, URL core: ${urlCore}, Subdomain tail: ${tail}`
 	);
 
-	return out; // Return the final encoded shortcode
+	return out;
 }
 
-// Function to validate if a given shortcode is valid (contains only alphanumeric characters)
+// ── Validation & Metadata ────────────────────────────────
+
 export function isValidShortcode(code: string): boolean {
 	return /^[0-9a-zA-Z]+$/.test(code);
 }
 
-// Function to calculate the maximum number of possible combinations for a shortcode of a given length
 export function getMaxCombinations(length: number): number {
-	return Math.pow(BASE, length); // BASE raised to the power of length
+	return Math.pow(BASE, length);
 }

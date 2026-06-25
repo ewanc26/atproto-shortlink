@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * Renders an API endpoint row with method badge, path, and description.
+	 * Optionally links out to the endpoint URL on hover.
+	 */
 	import { Globe } from '@lucide/svelte';
 	import CodeBlock from './CodeBlock.svelte';
 

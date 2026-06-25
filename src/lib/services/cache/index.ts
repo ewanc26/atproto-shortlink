@@ -1,5 +1,9 @@
 /**
- * Generic in-memory cache with TTL (Time To Live) support
+ * Generic in-memory cache with TTL (Time To Live) support.
+ *
+ * Entries expire lazily — expired items are cleaned on read or prune,
+ * not by a background timer. This avoids any scheduler overhead for
+ * what is inherently a short-lived server process.
  */
 export class Cache<T> {
 	private data = new Map<string, { value: T; expires: number }>();

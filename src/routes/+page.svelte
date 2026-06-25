@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Homepage — renders service status, the list of short links, API docs,
+	 * and a footer with links to the supporting services (Linkat, AT Protocol,
+	 * Slingshot).
+	 */
 	import { Github, Link as LinkIcon } from '@lucide/svelte';
 	import {
 		StatusCard,

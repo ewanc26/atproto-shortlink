@@ -1,3 +1,11 @@
+/**
+ * Homepage server load — resolves the user's DID to a handle and
+ * fetches all short links from the Linkat board.
+ *
+ * If ATPROTO_DID is unset or the resolution fails, the page still renders
+ * with a descriptive error so the user knows what to fix.
+ */
+
 import type { PageServerLoad } from './$types';
 import { ATPROTO_DID } from '$env/static/private';
 import { getShortLinks } from '$lib/services/linkat';

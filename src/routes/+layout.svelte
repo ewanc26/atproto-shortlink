@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Root layout — applies the global stylesheet, injects a FOUC-prevention
+	 * script that sets the theme class before the first paint, and renders
+	 * the theme toggle in the bottom-right corner.
+	 */
 	import '../app.css';
 	import { ThemeToggle } from '$lib/components';
 
@@ -13,7 +18,6 @@
 			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 			const htmlElement = document.documentElement;
 
-			// Use stored theme if available, otherwise use system preference
 			const shouldBeDark = stored === 'dark' || (!stored && prefersDark);
 
 			if (shouldBeDark) {

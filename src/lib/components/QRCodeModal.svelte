@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Full-screen modal that renders a QR code for the selected short link.
+	 * Uses a dynamic import of the qrcode library so the payload is only fetched
+	 * when the modal is first opened.
+	 */
 	import { X } from '@lucide/svelte';
 
 	interface Props {
@@ -22,7 +27,7 @@
 		if (isOpen && qrCodeContainer && typeof window !== 'undefined') {
 			import('qrcode').then(({ default: QRCode }) => {
 				if (!qrCodeContainer) return;
-				
+
 				qrCodeContainer.innerHTML = '';
 				QRCode.toCanvas(
 					url,

@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * Displays a single short link row with QR code, copy button, and arrow navigation.
+	 * This is the primary list item for the short links section on the homepage.
+	 */
 	import { Link as LinkIcon, ArrowRight, QrCode } from '@lucide/svelte';
 	import CodeBlock from './CodeBlock.svelte';
 	import CopyButton from './CopyButton.svelte';

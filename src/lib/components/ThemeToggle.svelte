@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * Fixed-position theme toggle (light/dark) with localStorage persistence.
+	 * Only renders after mount to avoid hydration mismatch on the icon state.
+	 */
 	import { Sun, Moon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
