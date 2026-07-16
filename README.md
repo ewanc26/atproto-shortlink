@@ -1,6 +1,8 @@
-# AT Protocol Link Shortener
+# Link Shortener for AT Protocol
 
 Server-side link shortener powered by your Linkat board. No database — links are fetched from AT Protocol.
+
+> Independent project; see the [trademark notice](TRADEMARKS.md).
 
 > Also available on [Tangled](https://tangled.org/ewancroft.uk/atproto-shortlink)
 
