@@ -16,9 +16,10 @@
 
 	let qrCodeContainer = $state<HTMLDivElement | undefined>();
 
-	// Handle keyboard events for accessibility
-	function handleBackdropKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') {
+	// Escape is bound at the window so it works regardless of where focus sits;
+	// relying on a handler on the backdrop only fired after a click landed on it.
+	function handleKeydown(e: KeyboardEvent) {
+		if (isOpen && e.key === 'Escape') {
 			onClose();
 		}
 	}
@@ -55,8 +56,14 @@
 	});
 </script>
 
+<svelte:window on:keydown={handleKeydown} />
+
 {#if isOpen}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<!-- Presentational backdrop. Click-to-close is a pointer convenience only:
+	     keyboard users close via Escape (bound at the window) or the close
+	     button, so no keyboard handler is needed here. -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		style="
 			position: fixed;
@@ -73,19 +80,19 @@
 			padding: 1rem;
 			z-index: 9999;
 		"
-		onclick={onClose}
-		onkeydown={handleBackdropKeydown}
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="qr-modal-title"
-		tabindex="-1"
+		onclick={(e) => {
+			// Only a click on the backdrop itself closes; clicks inside the panel
+			// bubble up here but must be ignored.
+			if (e.target === e.currentTarget) onClose();
+		}}
 	>
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="relative w-full max-w-md rounded-lg p-8 shadow-2xl"
 			style="background-color: rgb(var(--color-surface)); color: rgb(var(--color-text-primary))"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="qr-modal-title"
+			tabindex="-1"
 		>
 			<button
 				onclick={onClose}
@@ -111,8 +118,11 @@
 			</h2>
 
 			<div class="flex flex-col items-center gap-4">
-				<div bind:this={qrCodeContainer} class="rounded-lg p-4" style="background-color: white;">
-				</div>
+				<div
+					bind:this={qrCodeContainer}
+					class="rounded-lg p-4"
+					style="background-color: white;"
+				></div>
 				<p
 					class="max-w-xs break-all text-center text-sm"
 					style="color: rgb(var(--color-text-secondary))"

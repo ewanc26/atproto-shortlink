@@ -13,14 +13,34 @@
 		ApiEndpoint,
 		Section
 	} from '$lib/components';
+	import { page } from '$app/state';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
+
+	const title = 'AT Protocol Link Shortener';
+	const description =
+		'A self-hosted, database-free link shortening service that serves short links straight from an AT Protocol Linkat board.';
+
+	// Absolute URL for canonical/OG tags, derived from the current request.
+	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 </script>
 
 <svelte:head>
-	<title>AT Protocol Link Shortener</title>
-	<meta name="description" content="A server-side link shortening service powered by Linkat" />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<link rel="canonical" href={canonical} />
+	<meta name="robots" content="index, follow" />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content={title} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:url" content={canonical} />
+
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
 </svelte:head>
 
 <main class="mx-auto max-w-3xl px-4 py-8 font-sans leading-relaxed">

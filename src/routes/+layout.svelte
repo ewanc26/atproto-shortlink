@@ -14,7 +14,12 @@
 	<script>
 		// Prevent flash of unstyled content (FOUC) by applying theme before page renders
 		(function () {
-			const stored = localStorage.getItem('theme');
+			// localStorage throws in some privacy modes; fall back to the OS preference.
+			let stored = null;
+			try {
+				stored = localStorage.getItem('theme');
+			} catch (e) {}
+
 			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 			const htmlElement = document.documentElement;
 

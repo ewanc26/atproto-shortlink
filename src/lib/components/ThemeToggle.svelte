@@ -17,12 +17,13 @@
 
 	function toggleTheme() {
 		isDark = !isDark;
-		if (isDark) {
-			document.documentElement.classList.add('dark');
-			localStorage.setItem('theme', 'dark');
-		} else {
-			document.documentElement.classList.remove('dark');
-			localStorage.setItem('theme', 'light');
+		document.documentElement.classList.toggle('dark', isDark);
+
+		// Persistence is best-effort: localStorage throws in some privacy modes.
+		try {
+			localStorage.setItem('theme', isDark ? 'dark' : 'light');
+		} catch {
+			// Ignore — the theme still applies for this page view.
 		}
 	}
 </script>
@@ -32,7 +33,9 @@
 		onclick={toggleTheme}
 		class="fixed bottom-6 right-6 rounded-full p-3 shadow-lg transition-all hover:scale-110"
 		style="background-color: rgb(var(--color-surface-elevated)); color: rgb(var(--color-text-primary))"
-		aria-label="Toggle theme"
+		aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+		aria-pressed={isDark}
+		title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
 	>
 		{#if isDark}
 			<Sun size={20} />

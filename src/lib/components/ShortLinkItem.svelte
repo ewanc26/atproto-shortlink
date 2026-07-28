@@ -41,11 +41,19 @@
 			<LinkIcon size={20} class="shrink-0" style="color: rgb(var(--color-text-secondary))" />
 		{/if}
 
-		<a href="/{shortcode}" class="flex items-center gap-2 no-underline">
+		<a
+			href="/{shortcode}"
+			class="flex items-center gap-2 no-underline"
+			aria-label="Open short link /{shortcode}{title ? ` — ${title}` : ''}"
+		>
 			<CodeBlock>/{shortcode}</CodeBlock>
 		</a>
 
-		<span class="flex-1" style="color: rgb(var(--color-text-secondary))">{title}</span>
+		<!-- min-w-0 lets the title shrink instead of pushing the actions off-screen
+		     on narrow viewports. -->
+		<span class="min-w-0 flex-1 truncate" style="color: rgb(var(--color-text-secondary))"
+			>{title}</span
+		>
 
 		{#if fullUrl}
 			<button
@@ -61,10 +69,14 @@
 			<CopyButton text={fullUrl} />
 		{/if}
 
+		<!-- Decorative duplicate of the link above: hidden from assistive tech and
+		     removed from the tab order so it is not announced twice. -->
 		<a
 			href="/{shortcode}"
 			class="flex items-center gap-1 no-underline transition-colors"
 			style="color: rgb(var(--color-text-tertiary))"
+			aria-hidden="true"
+			tabindex="-1"
 		>
 			<ArrowRight
 				size={16}
