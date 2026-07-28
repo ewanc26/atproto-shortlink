@@ -18,7 +18,7 @@ Server-side link shortener powered by your Linkat board. No database — links a
 ```bash
 git clone git@github.com:ewanc26/atproto-shortlink
 cd atproto-shortlink
-npm install
+pnpm install
 ```
 
 Copy `.env.example` to `.env` and add your AT Protocol DID:
@@ -34,7 +34,7 @@ If you don't have a Linkat board yet, create one at [linkat.blue](https://linkat
 ### Test config
 
 ```bash
-npm run test:config
+pnpm run test:config
 ```
 
 Checks that `.env` exists, DID is valid, PDS is reachable, and your Linkat board is accessible.
@@ -42,7 +42,7 @@ Checks that `.env` exists, DID is valid, PDS is reachable, and your Linkat board
 ### Run
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## Endpoints
@@ -56,8 +56,8 @@ npm run dev
 ## Deploy
 
 ```bash
-npm run build
-npm run preview
+pnpm run build
+pnpm run preview
 ```
 
 Uses `@sveltejs/adapter-auto` — works with Vercel, Netlify, Cloudflare Pages, or Node.
@@ -73,10 +73,10 @@ Set `ATPROTO_DID` in your deployment platform's env vars.
 ## Development
 
 ```bash
-npm run dev     # dev server
-npm run check   # type check
-npm run format  # format
-npm run lint    # lint
+pnpm run dev     # dev server
+pnpm run check   # type check
+pnpm run format  # format
+pnpm run lint    # lint
 ```
 
 ## Licence
