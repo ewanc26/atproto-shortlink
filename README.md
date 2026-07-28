@@ -10,7 +10,7 @@ Server-side link shortener powered by your Linkat board. No database — links a
 
 1. You maintain links in [Linkat](https://linkat.blue) (stored in `blue.linkat.board` collection)
 2. Service fetches them on-demand from your PDS via Slingshot
-3. URLs get a deterministic 6-char base62 hash (e.g., `/a3k9zx`)
+3. URLs get a deterministic 10-char, mixed-case hash (e.g., `/aQ3k9zXr2M`)
 4. Visiting that short link returns a 301 redirect
 
 ## Quick start
@@ -47,11 +47,11 @@ npm run dev
 
 ## Endpoints
 
-| Endpoint | Method | What it does |
-|---|---|---|
-| `/` | GET | Service info and link listing |
-| `/:shortcode` | GET | 301 redirect to full URL |
-| `/api/links` | GET | All short links as JSON |
+| Endpoint      | Method | What it does                  |
+| ------------- | ------ | ----------------------------- |
+| `/`           | GET    | Service info and link listing |
+| `/:shortcode` | GET    | 301 redirect to full URL      |
+| `/api/links`  | GET    | All short links as JSON       |
 
 ## Deploy
 
@@ -66,9 +66,9 @@ Set `ATPROTO_DID` in your deployment platform's env vars.
 
 ### Config ref
 
-| Variable | Required | What it is |
-|---|---|---|
-| `ATPROTO_DID` | Yes | Your AT Protocol DID |
+| Variable      | Required | What it is           |
+| ------------- | -------- | -------------------- |
+| `ATPROTO_DID` | Yes      | Your AT Protocol DID |
 
 ## Development
 
