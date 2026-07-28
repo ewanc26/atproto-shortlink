@@ -141,15 +141,6 @@ export function encodeUrl(url: string, length: number = SHORTCODE.DEFAULT_LENGTH
 		out += pad.slice(0, length - out.length);
 	}
 
-	// Log collision space for debugging
-	const maxCombinations = BigInt(BASE) ** BigInt(length);
-	console.log(`[Shortcode Info] URL: ${url}`);
-	console.log(`[Shortcode Info] Length: ${length}, Charset: ${BASE} chars`);
-	console.log(`[Shortcode Info] Max possible combinations: ${maxCombinations.toString()}`);
-	console.log(
-		`[Shortcode Info] Domain prefix: ${domainPrefix}, URL core: ${urlCore}, Subdomain tail: ${tail}`
-	);
-
 	return out;
 }
 

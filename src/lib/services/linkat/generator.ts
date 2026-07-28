@@ -1,6 +1,7 @@
 import { SHORTCODE } from '$lib/constants';
 import type { LinkData, ShortLink } from '../types';
 import { encodeUrl } from '$lib/utils/encoding';
+import { toSafeRedirectUrl } from '$lib/utils/validation';
 
 /**
  * Converts Linkat card data to short links with generated shortcodes
@@ -17,6 +18,15 @@ export function generateShortLinks(linkatData: LinkData): ShortLink[] {
 	const usedShortcodes = new Set<string>();
 
 	for (const card of linkatData.cards) {
+		// Resolve the redirect target first — an unsafe card never earns a
+		// shortcode. The hash input stays the raw `card.url` so that existing
+		// published shortcodes remain stable.
+		const target = toSafeRedirectUrl(card.url);
+		if (!target) {
+			console.warn('[Linkat] Skipping card with an unsafe or malformed URL');
+			continue;
+		}
+
 		// Generate encoded shortcode from URL
 		let shortcode = encodeUrl(card.url);
 
@@ -31,8 +41,8 @@ export function generateShortLinks(linkatData: LinkData): ShortLink[] {
 
 		shortLinks.push({
 			shortcode,
-			url: card.url,
-			title: card.text,
+			url: target,
+			title: card.text ?? '',
 			emoji: card.emoji
 		});
 	}

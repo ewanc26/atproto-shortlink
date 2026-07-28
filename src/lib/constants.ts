@@ -25,6 +25,25 @@ export const SHORTCODE = {
 	CHARS: 'abcABCdefDEFghiHIJjklLMNmnOPQopqRSTrstUVWuvwXYZxyz0123456789'
 } as const;
 
+// ── Input Limits ──────────────────────────────────────────
+
+export const LIMITS = {
+	/** Maximum accepted length of a redirect target URL */
+	MAX_URL_LENGTH: 2048,
+
+	/** Maximum accepted length of a card title */
+	MAX_TITLE_LENGTH: 300,
+
+	/** Maximum accepted length of a card emoji */
+	MAX_EMOJI_LENGTH: 32,
+
+	/** Maximum accepted length of a shortcode in the request path */
+	MAX_SHORTCODE_LENGTH: 64,
+
+	/** Maximum accepted size of a Linkat board, in cards */
+	MAX_CARDS: 500
+} as const;
+
 // ── AT Protocol Configuration ─────────────────────────────
 
 export const ATPROTO = {
@@ -38,7 +57,10 @@ export const ATPROTO = {
 	LINKAT_COLLECTION: 'blue.linkat.board',
 
 	/** Linkat record key */
-	LINKAT_RKEY: 'self'
+	LINKAT_RKEY: 'self',
+
+	/** Timeout for identity/profile lookups, in milliseconds */
+	REQUEST_TIMEOUT_MS: 8000
 } as const;
 
 // ── HTTP Status Configuration ─────────────────────────────
@@ -51,5 +73,8 @@ export const HTTP = {
 	NOT_FOUND: 404,
 
 	/** Status code for no content */
-	NO_CONTENT: 204
+	NO_CONTENT: 204,
+
+	/** Status code for an unusable upstream response */
+	BAD_GATEWAY: 502
 } as const;

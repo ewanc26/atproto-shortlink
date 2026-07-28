@@ -28,7 +28,8 @@ export async function resolveIdentity(
 
 	const url = `${ATPROTO.SLINGSHOT_ENDPOINT}/xrpc/com.bad-example.identity.resolveMiniDoc?identifier=${encodeURIComponent(did)}`;
 
-	const response = await _fetch(url);
+	// Bound the upstream call so a hung resolver cannot stall every request.
+	const response = await _fetch(url, { signal: AbortSignal.timeout(ATPROTO.REQUEST_TIMEOUT_MS) });
 
 	if (!response.ok) {
 		console.error(`[Identity] Resolution failed: ${response.status} ${response.statusText}`);
@@ -37,12 +38,9 @@ export async function resolveIdentity(
 		);
 	}
 
-	const rawText = await response.text();
-	console.debug(`[Identity] Raw response:`, rawText);
-
 	let data: any;
 	try {
-		data = JSON.parse(rawText);
+		data = await response.json();
 	} catch (err) {
 		console.error('[Identity] Failed to parse identity resolver response as JSON', err);
 		throw err;
@@ -67,10 +65,7 @@ export async function resolveIdentity(
  * @returns The user's handle
  * @throws Error if resolution fails
  */
-export async function resolveHandle(
-	did: string,
-	fetchFn?: typeof fetch
-): Promise<string> {
+export async function resolveHandle(did: string, fetchFn?: typeof fetch): Promise<string> {
 	console.info(`[Identity] Resolving handle for DID: ${did}`);
 
 	const identity = await resolveIdentity(did, fetchFn);
@@ -84,7 +79,8 @@ export async function resolveHandle(
 	console.info('[Identity] Handle not in Slingshot response, fetching from public API');
 	const _fetch = fetchFn ?? globalThis.fetch;
 	const response = await _fetch(
-		`https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(did)}`
+		`${ATPROTO.PUBLIC_API}/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(did)}`,
+		{ signal: AbortSignal.timeout(ATPROTO.REQUEST_TIMEOUT_MS) }
 	);
 
 	if (!response.ok) {

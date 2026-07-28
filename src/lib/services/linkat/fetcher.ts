@@ -1,5 +1,6 @@
 import type { AtpAgent } from '@atproto/api';
-import { ATPROTO } from '$lib/constants';
+import { ATPROTO, LIMITS } from '$lib/constants';
+import { isValidCard } from '$lib/utils/validation';
 import type { LinkData } from '../types';
 
 /**
@@ -17,16 +18,25 @@ export async function fetchLinkatBoard(agent: AtpAgent, did: string): Promise<Li
 			rkey: ATPROTO.LINKAT_RKEY
 		});
 
-		const value = response.data.value;
+		const value = response.data.value as { cards?: unknown } | undefined;
 
-		if (!value || !Array.isArray((value as any).cards)) {
+		if (!value || !Array.isArray(value.cards)) {
 			console.warn('[Linkat] Invalid data structure');
 			return null;
 		}
 
-		return {
-			cards: (value as any).cards
-		};
+		// The record is remote, user-editable data: validate every card rather
+		// than trusting the declared type. Cards with a non-string or unsafe
+		// URL are dropped here so they can never reach the hasher or a
+		// `Location` header.
+		const rawCards = value.cards.slice(0, LIMITS.MAX_CARDS);
+		const cards = rawCards.filter(isValidCard);
+
+		if (cards.length !== rawCards.length) {
+			console.warn(`[Linkat] Discarded ${rawCards.length - cards.length} invalid card(s)`);
+		}
+
+		return { cards };
 	} catch (error) {
 		console.error('[Linkat] Failed to fetch board data:', error);
 		return null;

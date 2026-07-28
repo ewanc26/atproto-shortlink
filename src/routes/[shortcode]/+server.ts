@@ -9,18 +9,27 @@
 
 import type { RequestHandler } from './$types';
 import { findShortLink } from '$lib/services/linkat';
-import { HTTP } from '$lib/constants';
+import { HTTP, LIMITS } from '$lib/constants';
 import { redirect } from '@sveltejs/kit';
+import { isValidShortcode } from '$lib/utils/encoding';
+import { escapeHtml, toSafeRedirectUrl } from '$lib/utils/validation';
 
 export const GET: RequestHandler = async ({ params }) => {
 	const { shortcode } = params;
 
-	console.log(`[Redirect] Looking up shortcode: ${shortcode}`);
+	// Reject malformed shortcodes before touching the network. The value is
+	// attacker-controlled, so it is also escaped everywhere it is rendered.
+	const wellFormed =
+		typeof shortcode === 'string' &&
+		shortcode.length > 0 &&
+		shortcode.length <= LIMITS.MAX_SHORTCODE_LENGTH &&
+		isValidShortcode(shortcode);
 
-	const link = await findShortLink(shortcode);
+	const link = wellFormed ? await findShortLink(shortcode) : null;
 
 	if (!link) {
-		console.warn(`[Redirect] Shortcode not found: ${shortcode}`);
+		console.warn('[Redirect] Shortcode not found');
+		const safeShortcode = escapeHtml((shortcode ?? '').slice(0, LIMITS.MAX_SHORTCODE_LENGTH));
 		return new Response(
 			`<!DOCTYPE html>
 <html lang="en" class="h-full">
@@ -105,7 +114,7 @@ export const GET: RequestHandler = async ({ params }) => {
 		<h1>🔍 404</h1>
 		<h2>Short Link Not Found</h2>
 		<p>
-			The short link <code>/${shortcode}</code> doesn't exist.
+			The short link <code>/${safeShortcode}</code> doesn't exist.
 		</p>
 		<p>
 			<a href="/">← View all available links</a>
@@ -116,14 +125,30 @@ export const GET: RequestHandler = async ({ params }) => {
 			{
 				status: HTTP.NOT_FOUND,
 				headers: {
-					'Content-Type': 'text/html'
+					'Content-Type': 'text/html; charset=utf-8',
+					'X-Content-Type-Options': 'nosniff',
+					'Cache-Control': 'no-store'
 				}
 			}
 		);
 	}
 
-	console.log(`[Redirect] Redirecting to: ${link.url}`);
+	// Defence in depth: the generator already drops unsafe cards, but a target
+	// is re-validated immediately before it is placed in a `Location` header so
+	// no `javascript:`/`data:` value or header-injection payload can escape.
+	const target = toSafeRedirectUrl(link.url);
+
+	if (!target) {
+		console.error('[Redirect] Refusing to redirect to an unsafe target');
+		return new Response('This short link points to an unsupported target.', {
+			status: HTTP.BAD_GATEWAY,
+			headers: {
+				'Content-Type': 'text/plain; charset=utf-8',
+				'Cache-Control': 'no-store'
+			}
+		});
+	}
 
 	// Permanent redirect (301) — browsers and search engines will cache this
-	throw redirect(HTTP.REDIRECT_PERMANENT, link.url);
+	throw redirect(HTTP.REDIRECT_PERMANENT, target);
 };

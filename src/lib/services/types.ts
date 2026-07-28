@@ -1,5 +1,6 @@
 export interface LinkCard {
-	text: string;
+	/** Card label. Optional — Linkat boards may omit it. */
+	text?: string;
 	url: string;
 	emoji?: string;
 }
