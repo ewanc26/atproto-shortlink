@@ -1,28 +1,23 @@
-import { AtpAgent } from '@atproto/api';
+import { Client } from '@atproto/lex';
+
+export type { Client } from '@atproto/lex';
 
 /**
- * Creates an AtpAgent with optional fetch function injection
+ * Creates a Client with optional fetch function injection
  *
- * @param service - Service URL for the agent
+ * @param service - Service URL for the client
  * @param fetchFn - Optional custom fetch function (useful for server-side contexts)
- * @returns Configured AtpAgent instance
+ * @returns Configured Client instance
  */
-export function createAgent(service: string, fetchFn?: typeof fetch): AtpAgent {
-	// If we have an injected fetch, wrap it to ensure we handle headers correctly
+export function createAgent(service: string, fetchFn?: typeof fetch): Client {
 	const wrappedFetch = fetchFn
 		? async (url: URL | RequestInfo, init?: RequestInit) => {
-				// Convert URL to string if needed
 				const urlStr = url instanceof URL ? url.toString() : url;
-
-				// Make the request with the injected fetch
 				const response = await fetchFn(urlStr, init);
-
-				// Create a new response with the same body but add content-type if missing
 				const headers = new Headers(response.headers);
 				if (!headers.has('content-type')) {
 					headers.set('content-type', 'application/json');
 				}
-
 				return new Response(response.body, {
 					status: response.status,
 					statusText: response.statusText,
@@ -31,8 +26,5 @@ export function createAgent(service: string, fetchFn?: typeof fetch): AtpAgent {
 			}
 		: undefined;
 
-	return new AtpAgent({
-		service,
-		...(wrappedFetch && { fetch: wrappedFetch })
-	});
+	return new Client(service, wrappedFetch ? { fetch: wrappedFetch } : undefined);
 }

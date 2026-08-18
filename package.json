@@ -15,7 +15,9 @@
 		"lint": "prettier --check ."
 	},
 	"dependencies": {
-		"@atproto/api": "^0.18.1",
+		"@bsky/sdk": "latest",
+		"@atproto/lex": "^0.1.4",
+		"@atproto/lex-password-session": "latest",
 		"@lucide/svelte": "^0.555.0",
 		"qrcode": "^1.5.4",
 		"tldts": "^7.0.19"
