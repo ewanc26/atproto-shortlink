@@ -147,5 +147,10 @@
 				Source Code on GitHub
 			</Link>
 		</p>
+		<p>
+			<Link href="https://ko-fi.com/ewancroft" external>Ko-fi</Link>
+			&middot;
+			<Link href="https://github.com/sponsors/ewanc26" external>GitHub Sponsors</Link>
+		</p>
 	</footer>
 </main>
