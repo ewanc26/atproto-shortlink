@@ -39,7 +39,7 @@ export async function fetchLinkatData(): Promise<LinkData | null> {
 		} catch (error) {
 			console.warn('[Linkat] PDS unavailable, using fallback');
 			const result = await createAgentWithFallback();
-			agent = result.agent;
+			agent = result.client;
 			usedPDS = result.isPDS;
 		}
 

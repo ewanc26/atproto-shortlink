@@ -25,26 +25,26 @@ export { createAgent, resolveIdentity, defaultAgent, withFallback, resetAgents }
 export type { ResolvedIdentity };
 
 /**
- * Creates an AT Protocol agent for the configured DID
+ * Creates an AT Protocol client for the configured DID
  */
-export async function createAgentForDID(): Promise<import('@atproto/api').AtpAgent> {
+export async function createAgentForDID(): Promise<import('@atproto/lex').Client> {
 	return await getPublicAgent(ATPROTO_DID);
 }
 
 /**
- * Creates an AT Protocol agent with fallback to public Bluesky API
+ * Creates an AT Protocol client with fallback to public Bluesky API
  */
 export async function createAgentWithFallback(): Promise<{
-	agent: import('@atproto/api').AtpAgent;
+	client: import('@atproto/lex').Client;
 	isPDS: boolean;
 }> {
 	try {
-		const agent = await getPublicAgent(ATPROTO_DID);
-		return { agent, isPDS: true };
+		const client = await getPublicAgent(ATPROTO_DID);
+		return { client, isPDS: true };
 	} catch (error) {
 		console.warn('Failed to resolve PDS, falling back to Bluesky public API:', error);
-		const agent = defaultAgent;
-		return { agent, isPDS: false };
+		const client = defaultAgent;
+		return { client, isPDS: false };
 	}
 }
 
