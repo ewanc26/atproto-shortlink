@@ -10,7 +10,8 @@
  * Usage: node scripts/test-config.js
  */
 
-import { AtpAgent } from '@atproto/api';
+import { Client } from '@atproto/lex';
+import { app, com } from '@bsky/sdk/lexicons';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -123,22 +124,22 @@ async function testConfiguration() {
 
 		// Test connection to PDS
 		info('\nTesting connection to PDS...');
-		const agent = new AtpAgent({ service: pdsUrl });
+		const agent = new Client(pdsUrl);
 
 		// Try to fetch profile as a connectivity test
 		try {
-			const profile = await agent.getProfile({ actor: did });
+			const profile = await agent.call(app.bsky.actor.getProfile, { actor: did });
 			success(`Connected to PDS successfully`);
-			success(`Profile: @${profile.data.handle}`);
+			success(`Profile: @${profile.handle}`);
 		} catch (err) {
 			warning('Could not fetch profile from PDS, trying Bluesky API...');
 
 			// Fallback to Bluesky API
-			const bskyAgent = new AtpAgent({ service: 'https://public.api.bsky.app' });
+			const bskyAgent = new Client('https://public.api.bsky.app');
 			try {
-				const profile = await bskyAgent.getProfile({ actor: did });
+				const profile = await bskyAgent.call(app.bsky.actor.getProfile, { actor: did });
 				success(`Connected via Bluesky API`);
-				success(`Profile: @${profile.data.handle}`);
+				success(`Profile: @${profile.handle}`);
 			} catch (fallbackErr) {
 				error('Failed to connect to both PDS and Bluesky API');
 				throw fallbackErr;
@@ -148,19 +149,19 @@ async function testConfiguration() {
 		// Test Linkat data fetch
 		info('\nChecking for Linkat board...');
 		try {
-			const response = await agent.com.atproto.repo.getRecord({
+			const response = await agent.call(com.atproto.repo.getRecord, {
 				repo: did,
 				collection: 'blue.linkat.board',
 				rkey: 'self'
 			});
 
-			if (response.data.value && Array.isArray(response.data.value.cards)) {
-				const cardCount = response.data.value.cards.length;
+			if (response.value && Array.isArray(response.value.cards)) {
+				const cardCount = response.value.cards.length;
 				success(`Found Linkat board with ${cardCount} links`);
 
 				if (cardCount > 0) {
 					info('\nFirst few links:');
-					response.data.value.cards.slice(0, 3).forEach((card) => {
+					response.value.cards.slice(0, 3).forEach((card) => {
 						const shortcode = card.text.split(/\s+/)[0].toLowerCase();
 						log(`  • ${card.emoji || '🔗'} /${shortcode} → ${card.url}`, 'cyan');
 					});

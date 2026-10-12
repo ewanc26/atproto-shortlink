@@ -39,6 +39,14 @@ pnpm run test:config
 
 Checks that `.env` exists, DID is valid, PDS is reachable, and your Linkat board is accessible.
 
+### Check dependencies
+
+```bash
+pnpm run check:deps
+```
+
+Verifies that every package imported directly by a script in `scripts/` is declared directly in `package.json`, so a script cannot silently rely on a hoisted transitive dependency.
+
 ### Run
 
 ```bash
