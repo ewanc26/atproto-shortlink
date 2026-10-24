@@ -12,6 +12,16 @@ import type { LinkData, ShortLink } from '../types';
 const cache = new Cache<LinkData>();
 
 /**
+ * Thrown when the Linkat board cannot be fetched, as distinct from a shortcode that is absent
+ */
+export class LinkatUnavailableError extends Error {
+	constructor() {
+		super('Linkat board is unavailable');
+		this.name = 'LinkatUnavailableError';
+	}
+}
+
+/**
  * Fetches Linkat board data with caching
  *
  * @returns Linkat board data or null if fetch fails
@@ -77,11 +87,17 @@ export async function getShortLinks(): Promise<ShortLink[]> {
  * Finds a short link by its shortcode
  *
  * @param shortcode - The shortcode to find
- * @returns The matching short link or null if not found
+ * @returns The matching short link or null if the board loads but lacks it
+ * @throws LinkatUnavailableError if the Linkat board cannot be fetched
  */
 export async function findShortLink(shortcode: string): Promise<ShortLink | null> {
-	const links = await getShortLinks();
-	return findLinkByShortcode(links, shortcode);
+	const linkatData = await fetchLinkatData();
+
+	if (!linkatData) {
+		throw new LinkatUnavailableError();
+	}
+
+	return findLinkByShortcode(generateShortLinks(linkatData), shortcode);
 }
 
 /**

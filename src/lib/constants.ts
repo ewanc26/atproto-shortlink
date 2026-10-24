@@ -76,5 +76,8 @@ export const HTTP = {
 	NO_CONTENT: 204,
 
 	/** Status code for an unusable upstream response */
-	BAD_GATEWAY: 502
+	BAD_GATEWAY: 502,
+
+	/** Status code for a temporarily unavailable upstream */
+	SERVICE_UNAVAILABLE: 503
 } as const;
