@@ -8,4 +8,10 @@
  * - index.ts: Main service with caching
  */
 
-export { fetchLinkatData, getShortLinks, findShortLink, clearCache } from './linkat/index';
+export {
+	fetchLinkatData,
+	getShortLinks,
+	findShortLink,
+	clearCache,
+	LinkatUnavailableError
+} from './linkat/index';

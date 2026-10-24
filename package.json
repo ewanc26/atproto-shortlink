@@ -13,12 +13,13 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "prettier --check ."
+		"lint": "prettier --check .",
+		"test": "vitest run"
 	},
 	"dependencies": {
-		"@bsky/sdk": "1.0.1",
 		"@atproto/lex": "^0.3.0",
 		"@atproto/lex-password-session": "^0.2.2",
+		"@bsky/sdk": "1.0.1",
 		"@lucide/svelte": "^0.555.0",
 		"qrcode": "^1.5.4",
 		"tldts": "^7.0.19"
@@ -35,7 +36,8 @@
 		"svelte-check": "^4.3.4",
 		"tailwindcss": "^4.0.0",
 		"typescript": "^5.9.3",
-		"vite": "^7.2.4"
+		"vite": "^7.2.4",
+		"vitest": "^5.0.5"
 	},
 	"packageManager": "pnpm@11.9.0"
 }

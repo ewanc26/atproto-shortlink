@@ -8,11 +8,13 @@
  */
 
 import type { RequestHandler } from './$types';
-import { findShortLink } from '$lib/services/linkat';
+import { findShortLink, LinkatUnavailableError } from '$lib/services/linkat';
 import { HTTP, LIMITS } from '$lib/constants';
 import { redirect } from '@sveltejs/kit';
 import { isValidShortcode } from '$lib/utils/encoding';
 import { escapeHtml, toSafeRedirectUrl } from '$lib/utils/validation';
+
+const UNAVAILABLE_RETRY_AFTER_SECONDS = 60;
 
 export const GET: RequestHandler = async ({ params }) => {
 	const { shortcode } = params;
@@ -25,7 +27,24 @@ export const GET: RequestHandler = async ({ params }) => {
 		shortcode.length <= LIMITS.MAX_SHORTCODE_LENGTH &&
 		isValidShortcode(shortcode);
 
-	const link = wellFormed ? await findShortLink(shortcode) : null;
+	let link;
+	try {
+		link = wellFormed ? await findShortLink(shortcode) : null;
+	} catch (error) {
+		if (!(error instanceof LinkatUnavailableError)) {
+			throw error;
+		}
+
+		console.warn('[Redirect] Linkat board unavailable');
+		return new Response('The link service is temporarily unavailable. Please try again shortly.', {
+			status: HTTP.SERVICE_UNAVAILABLE,
+			headers: {
+				'Content-Type': 'text/plain; charset=utf-8',
+				'Retry-After': String(UNAVAILABLE_RETRY_AFTER_SECONDS),
+				'Cache-Control': 'no-store'
+			}
+		});
+	}
 
 	if (!link) {
 		console.warn('[Redirect] Shortcode not found');
