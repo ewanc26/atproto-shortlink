@@ -16,4 +16,4 @@ a shortlink service using Linkat.
 
 ## Recent direction
 
-Recent commits: Sync AGENTS.md from zincfox; Sync AGENTS.md from zincfox; Sync CONTRIBUTING.md from zincfox; Sync CONTRIBUTING.md from zincfox; chore: clean up linguist and gitignore rules (#2)
+Recent commits: chore: clean up linguist and gitignore rules (#2)
