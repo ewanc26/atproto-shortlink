@@ -55,8 +55,8 @@ pnpm run dev
 
 ## Endpoints
 
-| Endpoint      | Method  | What it does                  |
-| ------------- | ------ | ------------- |
+| Endpoint      | Method | What it does                  |
+| ------------- | ------ | ----------------------------- |
 | `/`           | GET    | Service info and link listing |
 | `/:shortcode` | GET    | 301 redirect to full URL      |
 | `/api/links`  | GET    | All short links as JSON       |
@@ -68,7 +68,15 @@ pnpm run build
 pnpm run preview
 ```
 
-`@sveltejs/adapter-auto` — works with Vercel, Netlify, Cloudflare Pages, or Node.
+Uses `@sveltejs/adapter-auto` — works with Vercel, Netlify, Cloudflare Pages, or Node.
+
+Set `ATPROTO_DID` in your deployment platform's env vars.
+
+### Config ref
+
+| Variable      | Required | What it is           |
+| ------------- | -------- | -------------------- |
+| `ATPROTO_DID` | Yes      | Your AT Protocol DID |
 
 ## Development
 
