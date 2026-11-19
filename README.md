@@ -75,8 +75,7 @@ Set `ATPROTO_DID` in your deployment platform's env vars.
 ### Config ref
 
 | Variable      | Required | What it is           |
-| ------------- | -------- | -----------
---------- |
+| ------------- | -------- | -------------------- |
 | `ATPROTO_DID` | Yes      | Your AT Protocol DID |
 
 ## Development
