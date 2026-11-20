@@ -20,7 +20,7 @@
 		"@atproto/lex": "^0.3.0",
 		"@atproto/lex-password-session": "^0.2.2",
 		"@bsky/sdk": "1.0.1",
-		"@lucide/svelte": "^0.555.0",
+		"@lucide/svelte": "^1.72.0",
 		"qrcode": "^1.5.4",
 		"tldts": "^7.0.19"
 	},
