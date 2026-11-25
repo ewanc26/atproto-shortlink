@@ -4,7 +4,7 @@ const fetchLinkatBoard = vi.fn();
 const createAgentForDID = vi.fn();
 const createAgentWithFallback = vi.fn();
 
-vi.mock('$env/static/private', () => ({ ATPROTO_DID: 'did:plc:test' }));
+vi.mock('$app/env/private', () => ({ ATPROTO_DID: 'did:plc:test' }));
 vi.mock('$lib/services/linkat/fetcher', () => ({ fetchLinkatBoard }));
 vi.mock('$lib/services/agent', () => ({ createAgentForDID, createAgentWithFallback }));
 

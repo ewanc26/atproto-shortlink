@@ -169,5 +169,7 @@ export const GET: RequestHandler = async ({ params }) => {
 	}
 
 	// Permanent redirect (301) — browsers and search engines will cache this
-	throw redirect(HTTP.REDIRECT_PERMANENT, target);
+	// `external` is required by SvelteKit for off-site targets; `target` has
+	// already been restricted to safe URLs by `toSafeRedirectUrl`.
+	throw redirect(HTTP.REDIRECT_PERMANENT, target, { external: true });
 };
