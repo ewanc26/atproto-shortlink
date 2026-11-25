@@ -8,7 +8,7 @@
  * - agent-manager.ts: Agent caching and fallback logic
  */
 
-import { ATPROTO_DID } from '$env/static/private';
+import { ATPROTO_DID } from '$app/env/private';
 import {
 	createAgent,
 	resolveIdentity,

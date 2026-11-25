@@ -7,7 +7,7 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { ATPROTO_DID } from '$env/static/private';
+import { ATPROTO_DID } from '$app/env/private';
 import { getShortLinks } from '$lib/services/linkat';
 import { resolveHandle } from '$lib/services/atproto';
 import type { ShortLink } from '$lib/services/types';
