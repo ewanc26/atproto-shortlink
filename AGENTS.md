@@ -23,6 +23,7 @@ A shortlink service using Linkat.
 chore: clean up linguist and gitignore rules (#2)
 
 <!-- allowed-agents -->
+
 ## Allowed agents
 
 Only **Claude** (Anthropic) and **Mistral** (Mistral AI) may be used as coding agents in this repository. This rule supersedes any earlier agent-attribution guidance in this file.

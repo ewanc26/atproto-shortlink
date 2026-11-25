@@ -51,9 +51,9 @@
 
 		<!-- min-w-0 lets the title shrink instead of pushing the actions off-screen
 		     on narrow viewports. -->
-		<span class="min-w-0 flex-1 truncate" style="color: rgb(var(--color-text-secondary))"
-			>{title}</span
-		>
+		<span class="min-w-0 flex-1 truncate" style="color: rgb(var(--color-text-secondary))">
+			{title}
+		</span>
 
 		{#if fullUrl}
 			<button
