@@ -1,4 +1,4 @@
-import { ATPROTO_DID } from '$env/static/private';
+import { ATPROTO_DID } from '$app/env/private';
 import { CACHE } from '$lib/constants';
 import { Cache } from '../cache';
 import { createAgentForDID, createAgentWithFallback } from '../agent';

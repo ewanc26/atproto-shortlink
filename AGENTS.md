@@ -4,7 +4,7 @@ Guidance for AI coding agents working in **atproto-shortlink**.
 
 ## Project overview
 
-a shortlink service using Linkat.
+A shortlink service using Linkat.
 
 - Language: TypeScript
 - Default branch: main

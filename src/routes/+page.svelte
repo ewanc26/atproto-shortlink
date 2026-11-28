@@ -4,7 +4,8 @@
 	 * and a footer with links to the supporting services (Linkat, AT Protocol,
 	 * Slingshot).
 	 */
-	import { Github, Link as LinkIcon } from '@lucide/svelte';
+	import { Link as LinkIcon } from '@lucide/svelte';
+	import Github from '$lib/components/GithubIcon.svelte';
 	import {
 		StatusCard,
 		CodeBlock,

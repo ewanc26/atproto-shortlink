@@ -7,3 +7,6 @@ bun.lockb
 
 # Miscellaneous
 /static/
+
+# Written by repository metadata normalisation
+.github/dependabot.yml
